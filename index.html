@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Citas Médicas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+                MediCitas
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active">Dashboard</a></li>
+                    <li><a href="#">Pacientes</a></li>
+                    <li><a href="#">Doctores</a></li>
+                    <li><a href="#">Reportes</a></li>
+                    <li><a href="#">Configuración</a></li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+                <div class="user-avatar">A</div>
+                <span>Admin</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="sidebar">
+                <h3>Menú Principal</h3>
+                <ul class="menu">
+                    <li><a href="#" class="active">Dashboard</a></li>
+                    <li><a href="#">Calendario</a></li>
+                    <li><a href="#">Citas</a></li>
+                    <li><a href="#">Pacientes</a></li>
+                    <li><a href="#">Médicos</a></li>
+                    <li><a href="#">Especialidades</a></li>
+                    <li><a href="#">Reportes</a></li>
+                    <li><a href="#">Retroalimentación</a></li>
+                    <li><a href="#">Configuración</a></li>
+                </ul>
+            </div>
+
+            <div class="main-content">
+                <h2 class="section-title">Dashboard</h2>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalAppointments">0</div>
+                        <div class="stat-label">Citas Totales</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pendingAppointments">0</div>
+                        <div class="stat-label">Citas Pendientes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="confirmedAppointments">0</div>
+                        <div class="stat-label">Citas Confirmadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="cancelledAppointments">0</div>
+                        <div class="stat-label">Citas Canceladas</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="section-title">Análisis de Citas</h3>
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="daily">Diario</button>
+                        <button class="tab-btn" data-tab="weekly">Semanal</button>
+                        <button class="tab-btn" data-tab="monthly">Mensual</button>
+                    </div>
+                    <div class="chart">
+                        <canvas id="appointmentsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="appointment-section">
+                    <div class="appointment-list">
+                        <h3 class="section-title">Citas de Hoy</h3>
+                        <div class="appointment-item">
+                            <div class="appointment-info">
+                                <div class="appointment-name">María García</div>
+                                <div class="appointment-time">9:00 AM - Dr. Rodríguez</div>
+                            </div>
+                            <span class="appointment-status status-confirmed">Confirmada</span>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="appointment-info">
+                                <div class="appointment-name">Juan Pérez</div>
+                                <div class="appointment-time">10:30 AM - Dra. Martínez</div>
+                            </div>
+                            <span class="appointment-status status-pending">Pendiente</span>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="appointment-info">
+                                <div class="appointment-name">Carlos López</div>
+                                <div class="appointment-time">1:15 PM - Dr. Gutiérrez</div>
+                            </div>
+                            <span class="appointment-status status-cancelled">Cancelada</span>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="appointment-info">
+                                <div class="appointment-name">Ana Ramírez</div>
+                                <div class="appointment-time">3:00 PM - Dra. Sánchez</div>
+                            </div>
+                            <span class="appointment-status status-confirmed">Confirmada</span>
+                        </div>
+                    </div>
+
+                    <div class="appointment-form">
+                        <h3 class="section-title">Registrar Nueva Cita</h3>
+                        <form id="newAppointmentForm">
+                            <div class="form-group">
+                                <label for="patientName">Nombre del Paciente</label>
+                                <input type="text" id="patientName" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="doctorSelect">Doctor</label>
+                                <select id="doctorSelect" class="form-control" required>
+                                    <option value="">Seleccionar doctor</option>
+                                    <option value="1">Dr. Rodríguez - Cardiología</option>
+                                    <option value="2">Dra. Martínez - Pediatría</option>
+                                    <option value="3">Dr. Gutiérrez - Neurología</option>
+                                    <option value="4">Dra. Sánchez - Dermatología</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="appointmentDate">Fecha</label>
+                                <input type="date" id="appointmentDate" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="appointmentTime">Hora</label>
+                                <input type="time" id="appointmentTime" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="appointmentNotes">Notas</label>
+                                <textarea id="appointmentNotes" class="form-control" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-block">Registrar Cita</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="feedback-container">
+                    <h3 class="section-title">Retroalimentación de Pacientes</h3>
+                    <div class="feedback-item">
+                        <div class="feedback-header">
+                            <div class="feedback-patient">María García</div>
+                            <div class="feedback-date">15/05/2025</div>
+                        </div>
+                        <div class="rating">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </div>
+                        <div class="feedback-text">
+                            Excelente atención por parte del Dr. Rodríguez. El sistema de citas es muy eficiente y pude programar mi cita rápidamente. Altamente recomendado.
+                        </div>
+                    </div>
+                    <div class="feedback-item">
+                        <div class="feedback-header">
+                            <div class="feedback-patient">Juan Pérez</div>
+                            <div class="feedback-date">12/05/2025</div>
+                        </div>
+                        <div class="rating">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </div>
+                        <div class="feedback-text">
+                            Buen servicio en general. El tiempo de espera podría mejorar, pero la atención fue buena.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="appointmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalles de la Cita</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="tab-container">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="details">Detalles</button>
+                    <button class="tab-btn" data-tab="history">Historial</button>
+                    <button class="tab-btn" data-tab="notes">Notas</button>
+                </div>
+                <div class="tab-content active" id="details-tab">
+                    <div class="form-group">
+                        <label>Paciente</label>
+                        <p id="modalPatientName">María García</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Doctor</label>
+                        <p id="modalDoctorName">Dr. Rodríguez</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha y Hora</label>
+                        <p id="modalDateTime">21/05/2025 - 9:00 AM</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <p id="modalStatus">Confirmada</p>
+                    </div>
+                </div>
+                <div class="tab-content" id="history-tab">
+                    <p>Historial de citas anteriores del paciente.</p>
+                </div>
+                <div class="tab-content" id="notes-tab">
+                    <textarea class="form-control" rows="5" placeholder="Agregar notas sobre la cita..."></textarea>
+                    <button class="btn" style="margin-top: 1rem;">Guardar Notas</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>

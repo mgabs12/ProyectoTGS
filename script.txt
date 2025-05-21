@@ -1,0 +1,664 @@
+// Datos simulados para el sistema
+const mockData = {
+    doctors: [
+        { id: 1, name: "Dra. María González", specialty: "general", available: true },
+        { id: 2, name: "Dr. Carlos Méndez", specialty: "general", available: true },
+        { id: 3, name: "Dr. Javier Ramírez", specialty: "pediatria", available: true },
+        { id: 4, name: "Dra. Sofía Vargas", specialty: "pediatria", available: true },
+        { id: 5, name: "Dr. Luis Torres", specialty: "ginecologia", available: true },
+        { id: 6, name: "Dra. Ana Morales", specialty: "ginecologia", available: true },
+        { id: 7, name: "Dr. Roberto Blanco", specialty: "traumatologia", available: true },
+        { id: 8, name: "Dra. Elena Castro", specialty: "traumatologia", available: true },
+        { id: 9, name: "Dr. David Ortega", specialty: "dermatologia", available: true },
+        { id: 10, name: "Dra. Laura Martínez", specialty: "dermatologia", available: true }
+    ],
+    patients: [
+        { id: "P001", name: "Juan Pérez", birthdate: "1985-06-15", gender: "M", phone: "555-1234", email: "juan.perez@example.com", address: "Calle Principal 123", lastVisit: "2025-04-25", notes: "Hipertensión" },
+        { id: "P002", name: "Ana López", birthdate: "1990-03-22", gender: "F", phone: "555-5678", email: "ana.lopez@example.com", address: "Avenida Central 456", lastVisit: "2025-04-28", notes: "Alergia a penicilina" },
+        { id: "P003", name: "Carlos Martínez", birthdate: "1978-11-07", gender: "M", phone: "555-9012", email: "carlos.martinez@example.com", address: "Plaza Mayor 789", lastVisit: "2025-05-01", notes: "Diabetes tipo 2" },
+        { id: "P004", name: "María García", birthdate: "1995-08-30", gender: "F", phone: "555-3456", email: "maria.garcia@example.com", address: "Calle Secundaria 321", lastVisit: "2025-05-05", notes: "Asma" },
+        { id: "P005", name: "Pedro González", birthdate: "1982-01-17", gender: "M", phone: "555-7890", email: "pedro.gonzalez@example.com", address: "Avenida Norte 654", lastVisit: "2025-05-08", notes: "Control rutinario" },
+        { id: "P006", name: "Laura Rodríguez", birthdate: "1974-04-12", gender: "F", phone: "555-2345", email: "laura.rodriguez@example.com", address: "Calle Sur 987", lastVisit: "2025-05-10", notes: "Artritis" },
+        { id: "P007", name: "Miguel Fernández", birthdate: "1988-09-23", gender: "M", phone: "555-6789", email: "miguel.fernandez@example.com", address: "Avenida Este 159", lastVisit: "2025-05-12", notes: "Migraña crónica" },
+        { id: "P008", name: "Carmen Díaz", birthdate: "1992-12-05", gender: "F", phone: "555-0123", email: "carmen.diaz@example.com", address: "Calle Oeste 753", lastVisit: null, notes: "Primera consulta" }
+    ],
+    appointments: [
+        { id: 1, patientId: "P001", doctorId: 2, date: "2025-05-15", time: "09:00", specialty: "general", type: "routine", notes: "Control anual", status: "scheduled", priority: "normal" },
+        { id: 2, patientId: "P002", doctorId: 5, date: "2025-05-15", time: "10:30", specialty: "ginecologia", type: "followup", notes: "Revisión postoperatoria", status: "confirmed", priority: "normal" },
+        { id: 3, patientId: "P003", doctorId: 1, date: "2025-05-15", time: "11:00", specialty: "general", type: "routine", notes: "Control de diabetes", status: "scheduled", priority: "normal" },
+        { id: 4, patientId: "P004", doctorId: 3, date: "2025-05-15", time: "15:30", specialty: "pediatria", type: "urgent", notes: "Fiebre alta", status: "scheduled", priority: "high" },
+        { id: 5, patientId: "P005", doctorId: 7, date: "2025-05-16", time: "09:30", specialty: "traumatologia", type: "followup", notes: "Dolor en rodilla", status: "scheduled", priority: "normal" },
+        { id: 6, patientId: "P006", doctorId: 9, date: "2025-05-16", time: "12:00", specialty: "dermatologia", type: "routine", notes: "Examen de lunares", status: "confirmed", priority: "normal" },
+        { id: 7, patientId: "P007", doctorId: 2, date: "2025-05-16", time: "16:00", specialty: "general", type: "urgent", notes: "Dolor abdominal agudo", status: "scheduled", priority: "high" },
+        { id: 8, patientId: "P008", doctorId: 4, date: "2025-05-17", time: "10:00", specialty: "pediatria", type: "routine", notes: "Primera consulta", status: "confirmed", priority: "normal" }
+    ],
+    timeSlots: ["08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", 
+                "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00"],
+    dailyStats: {
+        "2025-05-15": { total: 24, attended: 21, waiting: 18 },
+        "2025-05-16": { total: 26, attended: 22, waiting: 17 },
+        "2025-05-17": { total: 20, attended: 18, waiting: 15 },
+        "2025-05-18": { total: 15, attended: 13, waiting: 14 }
+    },
+    specialtyStats: {
+        general: 35,
+        pediatria: 28,
+        ginecologia: 22,
+        traumatologia: 18,
+        dermatologia: 15
+    }
+};
+
+// Variables globales
+let currentPatient = null;
+let nextAppointmentId = mockData.appointments.length + 1;
+let nextPatientId = "P00" + (mockData.patients.length + 1);
+let currentDate = new Date();
+let currentWeekStart = new Date(currentDate);
+currentWeekStart.setDate(currentDate.getDate() - currentDate.getDay());
+
+// Inicialización cuando el DOM se ha cargado completamente
+document.addEventListener('DOMContentLoaded', () => {
+    // Configurar navegación
+    setupNavigation();
+    
+    // Inicializar secciones
+    initializeDashboard();
+    initializeNewAppointment();
+    initializeAppointmentList();
+    initializeDoctorSchedule();
+    initializePatientManagement();
+    initializeStatistics();
+    
+    // Configurar notificaciones
+    setupNotifications();
+});
+
+// Funciones de inicialización de secciones
+function setupNavigation() {
+    const navLinks = document.querySelectorAll('nav a');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetSection = link.getAttribute('data-section');
+            
+            // Desactivar todas las secciones y enlaces
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.remove('active-section');
+            });
+            
+            document.querySelectorAll('nav a').forEach(navLink => {
+                navLink.classList.remove('active');
+            });
+            
+            // Activar la sección seleccionada y su enlace
+            document.getElementById(targetSection).classList.add('active-section');
+            link.classList.add('active');
+        });
+    });
+}
+
+function setupNotifications() {
+    const notification = document.getElementById('notification');
+    const closeBtn = document.querySelector('.close-notification');
+    
+    closeBtn.addEventListener('click', () => {
+        notification.style.display = 'none';
+    });
+    
+    // Función global para mostrar notificaciones
+    window.showNotification = function(message, duration = 3000) {
+        const notificationMessage = document.getElementById('notification-message');
+        notificationMessage.textContent = message;
+        
+        notification.style.display = 'flex';
+        
+        // Auto-cerrar después de cierto tiempo
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, duration);
+    };
+}
+
+// Dashboard
+function initializeDashboard() {
+    // Actualizar estadísticas del panel principal
+    document.getElementById('today-appointments').textContent = mockData.dailyStats[formatDate(currentDate)]?.total || 0;
+    document.getElementById('available-doctors').textContent = `${mockData.doctors.filter(d => d.available).length}/${mockData.doctors.length}`;
+    document.getElementById('attendance-rate').textContent = "85%";
+    document.getElementById('avg-wait-time').textContent = "18 min";
+    
+    // Mostrar próximas citas
+    updateUpcomingAppointments();
+    
+    // Inicializar gráficos (usando Chart.js)
+    initializeCharts();
+}
+
+function updateUpcomingAppointments() {
+    const tableBody = document.getElementById('upcoming-appointments-table');
+    tableBody.innerHTML = '';
+    
+    // Filtrar las citas de hoy y ordenarlas por hora
+    const todayDate = formatDate(currentDate);
+    const todayAppointments = mockData.appointments
+        .filter(app => app.date === todayDate)
+        .sort((a, b) => a.time.localeCompare(b.time));
+    
+    todayAppointments.forEach(appointment => {
+        const patient = mockData.patients.find(p => p.id === appointment.patientId);
+        const doctor = mockData.doctors.find(d => d.id === appointment.doctorId);
+        
+        const row = document.createElement('tr');
+        
+        // Crear y agregar celdas a la fila
+        row.innerHTML = `
+            <td>${appointment.time}</td>
+            <td>${patient.name}</td>
+            <td>${doctor.name}</td>
+            <td>${getSpecialtyName(appointment.specialty)}</td>
+            <td><span class="status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
+        `;
+        
+        tableBody.appendChild(row);
+    });
+    
+    // Si no hay citas hoy, mostrar mensaje
+    if (todayAppointments.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = '<td colspan="5" style="text-align: center;">No hay citas programadas para hoy</td>';
+        tableBody.appendChild(row);
+    }
+}
+
+function initializeCharts() {
+    // Gráfico de citas por especialidad
+    const specialtyCtx = document.getElementById('specialties-chart').getContext('2d');
+    const specialtyChart = new Chart(specialtyCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(mockData.specialtyStats).map(getSpecialtyName),
+            datasets: [{
+                data: Object.values(mockData.specialtyStats),
+                backgroundColor: [
+                    '#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                }
+            }
+        }
+    });
+    
+    // Gráfico de ocupación diaria
+    const dailyOccupationCtx = document.getElementById('daily-occupation-chart').getContext('2d');
+    const dailyData = Object.entries(mockData.dailyStats).map(([date, stats]) => {
+        return {
+            date: formatDateDisplay(date),
+            total: stats.total,
+            attended: stats.attended
+        };
+    });
+    
+    const dailyOccupationChart = new Chart(dailyOccupationCtx, {
+        type: 'bar',
+        data: {
+            labels: dailyData.map(d => d.date),
+            datasets: [
+                {
+                    label: 'Citas Totales',
+                    data: dailyData.map(d => d.total),
+                    backgroundColor: 'rgba(52, 152, 219, 0.7)'
+                },
+                {
+                    label: 'Citas Atendidas',
+                    data: dailyData.map(d => d.attended),
+                    backgroundColor: 'rgba(46, 204, 113, 0.7)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Nueva Cita
+function initializeNewAppointment() {
+    // Referencias a elementos del formulario
+    const patientIdInput = document.getElementById('patient-id');
+    const searchPatientBtn = document.getElementById('search-patient');
+    const patientInfoContainer = document.getElementById('patient-info-container');
+    const specialtySelect = document.getElementById('appointment-specialty');
+    const doctorSelect = document.getElementById('appointment-doctor');
+    const dateInput = document.getElementById('appointment-date');
+    const timeSelect = document.getElementById('appointment-time');
+    const appointmentTypeSelect = document.getElementById('appointment-type');
+    const checkAvailabilityBtn = document.getElementById('check-availability');
+    const appointmentForm = document.getElementById('appointment-form');
+    
+    // Configurar fecha mínima (hoy)
+    const today = new Date();
+    dateInput.min = formatDate(today);
+    dateInput.value = formatDate(today);
+    
+    // Buscar paciente
+    searchPatientBtn.addEventListener('click', () => {
+        const patientId = patientIdInput.value.trim();
+        
+        if (!patientId) {
+            showNotification('Por favor, ingrese un ID de paciente');
+            return;
+        }
+        
+        const patient = mockData.patients.find(p => p.id === patientId);
+        
+        if (patient) {
+            // Mostrar información del paciente
+            currentPatient = patient;
+            document.getElementById('patient-name').textContent = patient.name;
+            document.getElementById('patient-age').textContent = calculateAge(patient.birthdate);
+            document.getElementById('patient-last-visit').textContent = patient.lastVisit ? formatDateDisplay(patient.lastVisit) : 'Primera visita';
+            
+            patientInfoContainer.classList.remove('hidden');
+        } else {
+            showNotification('Paciente no encontrado. Verifique el ID o registre un nuevo paciente.');
+            patientInfoContainer.classList.add('hidden');
+            currentPatient = null;
+        }
+    });
+    
+    // Cambio de especialidad
+    specialtySelect.addEventListener('change', () => {
+        const specialty = specialtySelect.value;
+        updateDoctorsBySpecialty(specialty, doctorSelect);
+    });
+    
+    // Cambio de fecha o doctor
+    dateInput.addEventListener('change', updateAvailableTimeSlots);
+    doctorSelect.addEventListener('change', updateAvailableTimeSlots);
+    
+    // Cambio de tipo de cita
+    appointmentTypeSelect.addEventListener('change', updatePriority);
+    
+    // Verificar disponibilidad
+    checkAvailabilityBtn.addEventListener('click', () => {
+        const isValid = validateAppointmentForm();
+        
+        if (isValid) {
+            showNotification('Horario disponible para la cita', 2000);
+        }
+    });
+    
+    // Envío del formulario
+    appointmentForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const isValid = validateAppointmentForm();
+        
+        if (isValid && currentPatient) {
+            // Crear nueva cita
+            const newAppointment = {
+                id: nextAppointmentId++,
+                patientId: currentPatient.id,
+                doctorId: parseInt(doctorSelect.value),
+                date: dateInput.value,
+                time: timeSelect.value,
+                specialty: specialtySelect.value,
+                type: appointmentTypeSelect.value,
+                notes: document.getElementById('appointment-notes').value,
+                status: 'scheduled',
+                priority: getPriorityFromType(appointmentTypeSelect.value)
+            };
+            
+            // Agregar a la lista de citas
+            mockData.appointments.push(newAppointment);
+            
+            showNotification('Cita agendada exitosamente');
+            appointmentForm.reset();
+            patientInfoContainer.classList.add('hidden');
+            updateUpcomingAppointments();
+            currentPatient = null;
+            
+            // Restablecer valores predeterminados
+            dateInput.value = formatDate(today);
+            timeSelect.innerHTML = '<option value="">Seleccione hora</option>';
+            doctorSelect.innerHTML = '<option value="">Primero seleccione especialidad</option>';
+        } else if (!currentPatient) {
+            showNotification('Por favor, busque y seleccione un paciente');
+        }
+    });
+    
+    // Funciones auxiliares para esta sección
+    function updateDoctorsBySpecialty(specialty, selectElement) {
+        selectElement.innerHTML = '<option value="">Seleccione un médico</option>';
+        
+        if (!specialty) return;
+        
+        const filteredDoctors = mockData.doctors.filter(doctor => doctor.specialty === specialty);
+        
+        filteredDoctors.forEach(doctor => {
+            const option = document.createElement('option');
+            option.value = doctor.id;
+            option.textContent = doctor.name;
+            selectElement.appendChild(option);
+        });
+    }
+    
+    function updateAvailableTimeSlots() {
+        const doctorId = parseInt(doctorSelect.value);
+        const date = dateInput.value;
+        timeSelect.innerHTML = '<option value="">Seleccione hora</option>';
+        
+        if (!doctorId || !date) return;
+        
+        // Obtener horarios ocupados para el médico en esa fecha
+        const bookedSlots = mockData.appointments
+            .filter(app => app.doctorId === doctorId && app.date === date)
+            .map(app => app.time);
+        
+        // Mostrar slots disponibles
+        mockData.timeSlots.forEach(slot => {
+            if (!bookedSlots.includes(slot)) {
+                const option = document.createElement('option');
+                option.value = slot;
+                option.textContent = slot;
+                timeSelect.appendChild(option);
+            }
+        });
+    }
+    
+    function updatePriority() {
+        const appointmentType = appointmentTypeSelect.value;
+        const priorityIndicator = document.getElementById('priority-indicator');
+        const prioritySpan = priorityIndicator.querySelector('span');
+        
+        prioritySpan.className = ''; // Limpiar clases previas
+        
+        const priority = getPriorityFromType(appointmentType);
+        prioritySpan.classList.add(`priority-${priority}`);
+        prioritySpan.textContent = getPriorityName(priority);
+    }
+    
+    function getPriorityFromType(type) {
+        switch(type) {
+            case 'urgent':
+                return 'urgent';
+            case 'followup':
+                return 'normal';
+            case 'labresults':
+                return 'normal';
+            default:
+                return 'normal';
+        }
+    }
+    
+    function validateAppointmentForm() {
+        const doctor = doctorSelect.value;
+        const date = dateInput.value;
+        const time = timeSelect.value;
+        const specialty = specialtySelect.value;
+        
+        if (!specialty) {
+            showNotification('Por favor, seleccione una especialidad');
+            return false;
+        }
+        
+        if (!doctor) {
+            showNotification('Por favor, seleccione un médico');
+            return false;
+        }
+        
+        if (!date) {
+            showNotification('Por favor, seleccione una fecha');
+            return false;
+        }
+        
+        if (!time) {
+            showNotification('Por favor, seleccione una hora');
+            return false;
+        }
+        
+        return true;
+    }
+}
+
+// Lista de Citas
+function initializeAppointmentList() {
+    // Referencias a elementos
+    const filterDateInput = document.getElementById('filter-date');
+    const filterDoctorSelect = document.getElementById('filter-doctor');
+    const filterSpecialtySelect = document.getElementById('filter-specialty');
+    const filterStatusSelect = document.getElementById('filter-status');
+    const applyFiltersBtn = document.getElementById('apply-filters');
+    const prevWeekBtn = document.getElementById('prev-week');
+    const nextWeekBtn = document.getElementById('next-week');
+    const calendarTitle = document.getElementById('calendar-title');
+    const calendarGrid = document.getElementById('appointment-calendar-grid');
+    const appointmentsTable = document.getElementById('appointments-table');
+    
+    // Cargar médicos en el filtro
+    populateDoctorFilter(filterDoctorSelect);
+    
+    // Establecer fecha actual en el filtro
+    filterDateInput.value = formatDate(currentDate);
+    
+    // Cargar calendario y tabla de citas
+    updateCalendarView();
+    updateAppointmentsTable();
+    
+    // Eventos
+    applyFiltersBtn.addEventListener('click', () => {
+        updateAppointmentsTable();
+    });
+    
+    prevWeekBtn.addEventListener('click', () => {
+        currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+        updateCalendarView();
+    });
+    
+    nextWeekBtn.addEventListener('click', () => {
+        currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+        updateCalendarView();
+    });
+    
+    // Funciones para esta sección
+    function populateDoctorFilter(selectElement) {
+        selectElement.innerHTML = '<option value="">Todos los médicos</option>';
+        
+        mockData.doctors.forEach(doctor => {
+            const option = document.createElement('option');
+            option.value = doctor.id;
+            option.textContent = doctor.name;
+            selectElement.appendChild(option);
+        });
+    }
+    
+    function updateCalendarView() {
+        calendarGrid.innerHTML = '';
+        
+        // Actualizar título del calendario
+        const weekEnd = new Date(currentWeekStart);
+        weekEnd.setDate(currentWeekStart.getDate() + 6);
+        
+        calendarTitle.textContent = `Semana del ${formatDateDisplay(formatDate(currentWeekStart))} al ${formatDateDisplay(formatDate(weekEnd))}`;
+        
+        // Crear encabezados de días
+        const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        
+        daysOfWeek.forEach(day => {
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'day-header';
+            dayHeader.textContent = day;
+            calendarGrid.appendChild(dayHeader);
+        });
+        
+        // Crear celdas de días con citas
+        for (let i = 0; i < 7; i++) {
+            const dayDate = new Date(currentWeekStart);
+            dayDate.setDate(currentWeekStart.getDate() + i);
+            const dateStr = formatDate(dayDate);
+            
+            const dayCell = document.createElement('div');
+            dayCell.className = 'day-cell';
+            
+            // Agregar fecha
+            const dateHeader = document.createElement('div');
+            dateHeader.className = 'date-header';
+            dateHeader.textContent = dayDate.getDate();
+            
+            // Marcar día actual
+            if (formatDate(currentDate) === dateStr) {
+                dateHeader.classList.add('current-day');
+            }
+            
+            dayCell.appendChild(dateHeader);
+            
+            // Filtrar citas para este día
+            const dayAppointments = mockData.appointments.filter(app => app.date === dateStr);
+            
+            // Agregar conteo de citas
+            const countBadge = document.createElement('div');
+            countBadge.className = 'appointment-count';
+            countBadge.textContent = dayAppointments.length + ' citas';
+            dayCell.appendChild(countBadge);
+            
+            // Mostrar primeras 3 citas
+            dayAppointments.slice(0, 3).forEach(app => {
+                const appItem = document.createElement('div');
+                appItem.className = `appointment-item status-${app.status}`;
+                
+                const patient = mockData.patients.find(p => p.id === app.patientId);
+                const doctor = mockData.doctors.find(d => d.id === app.doctorId);
+                
+                appItem.innerHTML = `
+                    <span class="appointment-time">${app.time}</span>
+                    <span class="appointment-patient">${patient.name}</span>
+                    <span class="appointment-doctor">${doctor.name}</span>
+                `;
+                
+                dayCell.appendChild(appItem);
+            });
+            
+            // Indicador de más citas
+            if (dayAppointments.length > 3) {
+                const moreIndicator = document.createElement('div');
+                moreIndicator.className = 'more-appointments';
+                moreIndicator.textContent = `+ ${dayAppointments.length - 3} más`;
+                dayCell.appendChild(moreIndicator);
+            }
+            
+            calendarGrid.appendChild(dayCell);
+        }
+    }
+    
+    function updateAppointmentsTable() {
+        appointmentsTable.innerHTML = '';
+        
+        // Obtener valores de filtros
+        const dateFilter = filterDateInput.value;
+        const doctorFilter = filterDoctorSelect.value ? parseInt(filterDoctorSelect.value) : null;
+        const specialtyFilter = filterSpecialtySelect.value;
+        const statusFilter = filterStatusSelect.value;
+        
+        // Filtrar citas
+        let filteredAppointments = [...mockData.appointments];
+        
+        if (dateFilter) {
+            filteredAppointments = filteredAppointments.filter(app => app.date === dateFilter);
+        }
+        
+        if (doctorFilter) {
+            filteredAppointments = filteredAppointments.filter(app => app.doctorId === doctorFilter);
+        }
+        
+        if (specialtyFilter) {
+            filteredAppointments = filteredAppointments.filter(app => app.specialty === specialtyFilter);
+        }
+        
+        if (statusFilter) {
+            filteredAppointments = filteredAppointments.filter(app => app.status === statusFilter);
+        }
+        
+        // Ordenar por fecha y hora
+        filteredAppointments.sort((a, b) => {
+            const dateComparison = a.date.localeCompare(b.date);
+            if (dateComparison !== 0) return dateComparison;
+            return a.time.localeCompare(b.time);
+        });
+        
+        // Mostrar resultados
+        filteredAppointments.forEach(appointment => {
+            const patient = mockData.patients.find(p => p.id === appointment.patientId);
+            const doctor = mockData.doctors.find(d => d.id === appointment.doctorId);
+            
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td>${formatDateDisplay(appointment.date)}</td>
+                <td>${appointment.time}</td>
+                <td>${patient.name}</td>
+                <td>${doctor.name}</td>
+                <td>${getSpecialtyName(appointment.specialty)}</td>
+                <td>${getAppointmentTypeName(appointment.type)}</td>
+                <td><span class="status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
+                <td>
+                    <button class="action-button" data-action="edit" data-id="${appointment.id}"><i class="fas fa-edit"></i></button>
+                    <button class="action-button" data-action="cancel" data-id="${appointment.id}"><i class="fas fa-times"></i></button>
+                    <button class="action-button" data-action="complete" data-id="${appointment.id}"><i class="fas fa-check"></i></button>
+                </td>
+            `;
+            
+            appointmentsTable.appendChild(row);
+        });
+        
+        // Agregar eventos a los botones de acción
+        document.querySelectorAll('.action-button').forEach(button => {
+            button.addEventListener('click', handleAppointmentAction);
+        });
+        
+        // Mostrar mensaje si no hay resultados
+        if (filteredAppointments.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = '<td colspan="8" style="text-align: center;">No se encontraron citas con los filtros seleccionados</td>';
+            appointmentsTable.appendChild(row);
+        }
+    }
+    
+    function handleAppointmentAction(e) {
+        const action = e.currentTarget.getAttribute('data-action');
+        const appointmentId = parseInt(e.currentTarget.getAttribute('data-id'));
+        
+        const appointmentIndex = mockData.appointments.findIndex(app => app.id === appointmentId);
+        
+        if (appointmentIndex === -1) return;
+        
+        switch (action) {
+            case 'edit':
+                // Aquí se podría abrir un modal para editar
+                showNotification('Función de edición no implementada en esta demo', 2000);
+                break;
+                
+            case 'cancel':
+                // Cancelar cita
+                mockData.appointments[appointmentIndex].status = 'cancelled';
+                updateAppointmentsTable();
+                showNotification('Cita cancelada correctamente', 2000);
+                break;
+                
+            case 'complete':
+                // Marcar como completada
+                mockData.appointments[appointmentIndex].status = 'completed';
+                updateAppointmentsTable();
+                showNotification('

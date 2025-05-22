@@ -5,251 +5,499 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Citas Médicas</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                </svg>
-                MediCitas
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="#" class="active">Dashboard</a></li>
-                    <li><a href="#">Pacientes</a></li>
-                    <li><a href="#">Doctores</a></li>
-                    <li><a href="#">Reportes</a></li>
-                    <li><a href="#">Configuración</a></li>
-                </ul>
-            </nav>
-            <div class="user-profile">
-                <div class="user-avatar">A</div>
-                <span>Admin</span>
-            </div>
-        </div>
-    </header>
-
     <div class="container">
-        <div class="dashboard">
-            <div class="sidebar">
-                <h3>Menú Principal</h3>
-                <ul class="menu">
-                    <li><a href="#" class="active">Dashboard</a></li>
-                    <li><a href="#">Calendario</a></li>
-                    <li><a href="#">Citas</a></li>
-                    <li><a href="#">Pacientes</a></li>
-                    <li><a href="#">Médicos</a></li>
-                    <li><a href="#">Especialidades</a></li>
-                    <li><a href="#">Reportes</a></li>
-                    <li><a href="#">Retroalimentación</a></li>
-                    <li><a href="#">Configuración</a></li>
-                </ul>
-            </div>
+        <header>
+            <h1>Clínica Médica TGS</h1>
+            <p>Sistema de Gestión de Citas Médicas</p>
+        </header>
 
-            <div class="main-content">
-                <h2 class="section-title">Dashboard</h2>
+        <nav>
+            <ul>
+                <li><a href="#" class="active" data-section="dashboard"><i class="fas fa-home"></i> Inicio</a></li>
+                <li><a href="#" data-section="new-appointment"><i class="fas fa-calendar-plus"></i> Nueva Cita</a></li>
+                <li><a href="#" data-section="appointment-list"><i class="fas fa-calendar-check"></i> Citas Programadas</a></li>
+                <li><a href="#" data-section="doctor-schedule"><i class="fas fa-user-md"></i> Médicos</a></li>
+                <li><a href="#" data-section="patient-management"><i class="fas fa-users"></i> Pacientes</a></li>
+                <li><a href="#" data-section="statistics"><i class="fas fa-chart-line"></i> Estadísticas</a></li>
+            </ul>
+        </nav>
 
-                <div class="stats">
+        <main>
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="active-section">
+                <h2>Panel Principal</h2>
+                <div class="dashboard-stats">
                     <div class="stat-card">
-                        <div class="stat-value" id="totalAppointments">0</div>
-                        <div class="stat-label">Citas Totales</div>
+                        <i class="fas fa-calendar-day"></i>
+                        <h3>Citas Hoy</h3>
+                        <p class="stat-value" id="today-appointments">42</p>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="pendingAppointments">0</div>
-                        <div class="stat-label">Citas Pendientes</div>
+                        <i class="fas fa-user-md"></i>
+                        <h3>Médicos Disponibles</h3>
+                        <p class="stat-value" id="available-doctors">8/10</p>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="confirmedAppointments">0</div>
-                        <div class="stat-label">Citas Confirmadas</div>
+                        <i class="fas fa-procedures"></i>
+                        <h3>Tasa de Asistencia</h3>
+                        <p class="stat-value" id="attendance-rate">85%</p>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="cancelledAppointments">0</div>
-                        <div class="stat-label">Citas Canceladas</div>
+                        <i class="fas fa-clock"></i>
+                        <h3>Tiempo Promedio de Espera</h3>
+                        <p class="stat-value" id="avg-wait-time">18 min</p>
                     </div>
                 </div>
 
-                <div class="chart-container">
-                    <h3 class="section-title">Análisis de Citas</h3>
-                    <div class="tabs">
-                        <button class="tab-btn active" data-tab="daily">Diario</button>
-                        <button class="tab-btn" data-tab="weekly">Semanal</button>
-                        <button class="tab-btn" data-tab="monthly">Mensual</button>
-                    </div>
-                    <div class="chart">
-                        <canvas id="appointmentsChart"></canvas>
+                <div class="dashboard-charts">
+                    <div class="chart-container">
+                    <h3>Citas por Especialidad</h3>
+                    <canvas id="specialties-chart"></canvas>
                     </div>
                 </div>
 
-                <div class="appointment-section">
-                    <div class="appointment-list">
-                        <h3 class="section-title">Citas de Hoy</h3>
-                        <div class="appointment-item">
-                            <div class="appointment-info">
-                                <div class="appointment-name">María García</div>
-                                <div class="appointment-time">9:00 AM - Dr. Rodríguez</div>
-                            </div>
-                            <span class="appointment-status status-confirmed">Confirmada</span>
+                <div class="upcoming-appointments">
+                    <h3>Próximas Citas</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Paciente</th>
+                                <th>Médico</th>
+                                <th>Especialidad</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="upcoming-appointments-table">
+                            <!-- Data will be loaded from JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- New Appointment Section -->
+            <section id="new-appointment">
+                <h2>Solicitar Nueva Cita</h2>
+                <form id="appointment-form">
+                    <div class="form-group">
+                        <label for="patient-id">ID del Paciente:</label>
+                        <input type="text" id="patient-id" required placeholder="Ingrese ID o busque paciente">
+                        <button type="button" id="search-patient" class="secondary-button">Buscar</button>
+                    </div>
+
+                    <div class="patient-info hidden" id="patient-info-container">
+                        <h3>Información del Paciente</h3>
+                        <p><strong>Nombre:</strong> <span id="patient-name">-</span></p>
+                        <p><strong>Edad:</strong> <span id="patient-age">-</span></p>
+                        <p><strong>Última visita:</strong> <span id="patient-last-visit">-</span></p>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="appointment-specialty">Especialidad:</label>
+                            <select id="appointment-specialty" required>
+                                <option value="">Seleccione especialidad</option>
+                                <option value="general">Medicina General</option>
+                                <option value="pediatria">Pediatría</option>
+                                <option value="ginecologia">Ginecología</option>
+                                <option value="traumatologia">Traumatología</option>
+                                <option value="dermatologia">Dermatología</option>
+                            </select>
                         </div>
-                        <div class="appointment-item">
-                            <div class="appointment-info">
-                                <div class="appointment-name">Juan Pérez</div>
-                                <div class="appointment-time">10:30 AM - Dra. Martínez</div>
-                            </div>
-                            <span class="appointment-status status-pending">Pendiente</span>
-                        </div>
-                        <div class="appointment-item">
-                            <div class="appointment-info">
-                                <div class="appointment-name">Carlos López</div>
-                                <div class="appointment-time">1:15 PM - Dr. Gutiérrez</div>
-                            </div>
-                            <span class="appointment-status status-cancelled">Cancelada</span>
-                        </div>
-                        <div class="appointment-item">
-                            <div class="appointment-info">
-                                <div class="appointment-name">Ana Ramírez</div>
-                                <div class="appointment-time">3:00 PM - Dra. Sánchez</div>
-                            </div>
-                            <span class="appointment-status status-confirmed">Confirmada</span>
+                        <div class="form-group">
+                            <label for="appointment-doctor">Médico:</label>
+                            <select id="appointment-doctor" required>
+                                <option value="">Primero seleccione especialidad</option>
+                                <!-- Options will be populated based on specialty -->
+                            </select>
                         </div>
                     </div>
 
-                    <div class="appointment-form">
-                        <h3 class="section-title">Registrar Nueva Cita</h3>
-                        <form id="newAppointmentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="appointment-date">Fecha:</label>
+                            <input type="date" id="appointment-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointment-time">Hora:</label>
+                            <select id="appointment-time" required>
+                                <option value="">Seleccione hora</option>
+                                <!-- Time slots will be loaded based on date and doctor -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointment-type">Tipo de Consulta:</label>
+                        <select id="appointment-type" required>
+                            <option value="routine">Consulta de Rutina</option>
+                            <option value="followup">Seguimiento</option>
+                            <option value="urgent">Urgencia</option>
+                            <option value="labresults">Resultados de Exámenes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointment-notes">Notas / Motivo de la consulta:</label>
+                        <textarea id="appointment-notes" rows="3"></textarea>
+                    </div>
+
+                    <div class="appointment-priority">
+                        <p id="priority-indicator">Prioridad: <span class="priority-normal">Normal</span></p>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="secondary-button" id="check-availability">Verificar Disponibilidad</button>
+                        <button type="submit" class="primary-button">Agendar Cita</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Appointment List Section -->
+            <section id="appointment-list">
+                <h2>Citas Programadas</h2>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="filter-date">Fecha:</label>
+                        <input type="date" id="filter-date">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-doctor">Médico:</label>
+                        <select id="filter-doctor">
+                            <option value="">Todos los médicos</option>
+                            <!-- Options will be loaded from JavaScript -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-specialty">Especialidad:</label>
+                        <select id="filter-specialty">
+                            <option value="">Todas las especialidades</option>
+                            <option value="general">Medicina General</option>
+                            <option value="pediatria">Pediatría</option>
+                            <option value="ginecologia">Ginecología</option>
+                            <option value="traumatologia">Traumatología</option>
+                            <option value="dermatologia">Dermatología</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-status">Estado:</label>
+                        <select id="filter-status">
+                            <option value="">Todos</option>
+                            <option value="scheduled">Programada</option>
+                            <option value="confirmed">Confirmada</option>
+                            <option value="completed">Completada</option>
+                            <option value="canceled">Cancelada</option>
+                            <option value="noshow">No asistió</option>
+                        </select>
+                    </div>
+                    <button id="apply-filters" class="secondary-button">Aplicar Filtros</button>
+                </div>
+
+                <div class="appointment-calendar">
+                    <div class="calendar-header">
+                        <button id="prev-week" class="calendar-nav"><i class="fas fa-chevron-left"></i></button>
+                        <h3 id="calendar-title">Semana del 12 al 18 de Mayo, 2025</h3>
+                        <button id="next-week" class="calendar-nav"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-grid" id="appointment-calendar-grid">
+                        <!-- Calendar will be generated with JavaScript -->
+                    </div>
+                </div>
+
+                <div class="appointments-list">
+                    <h3>Listado de Citas</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Paciente</th>
+                                <th>Médico</th>
+                                <th>Especialidad</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointments-table">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Doctor Schedule Section -->
+            <section id="doctor-schedule">
+                <h2>Agenda de Médicos</h2>
+                <div class="doctor-filters">
+                    <div class="filter-group">
+                        <label for="doctor-select">Médico:</label>
+                        <select id="doctor-select">
+                            <option value="">Seleccione un médico</option>
+                            <!-- Options will be loaded from JavaScript -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="doctor-date">Fecha:</label>
+                        <input type="date" id="doctor-date">
+                    </div>
+                    <button id="view-schedule" class="secondary-button">Ver Agenda</button>
+                </div>
+
+                <div class="doctor-info-card" id="doctor-info">
+                    <div class="doctor-avatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="doctor-details">
+                        <h3 id="selected-doctor-name">Dr. Carlos Méndez</h3>
+                        <p><strong>Especialidad:</strong> <span id="selected-doctor-specialty">Medicina General</span></p>
+                        <p><strong>Consultas hoy:</strong> <span id="selected-doctor-appointments">8/12</span></p>
+                        <p><strong>Tasa de ocupación:</strong> <span id="selected-doctor-occupation">67%</span></p>
+                    </div>
+                </div>
+
+                <div class="schedule-timeline">
+                    <div class="timeline-header">
+                        <div class="time-column">Hora</div>
+                        <div class="appointment-column">Cita</div>
+                        <div class="status-column">Estado</div>
+                    </div>
+                    <div class="timeline-body" id="doctor-timeline">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="schedule-management">
+                    <h3>Gestión de Disponibilidad</h3>
+                    <div class="availability-form">
+                        <div class="form-row">
                             <div class="form-group">
-                                <label for="patientName">Nombre del Paciente</label>
-                                <input type="text" id="patientName" class="form-control" required>
+                                <label for="availability-date">Fecha:</label>
+                                <input type="date" id="availability-date">
                             </div>
                             <div class="form-group">
-                                <label for="doctorSelect">Doctor</label>
-                                <select id="doctorSelect" class="form-control" required>
-                                    <option value="">Seleccionar doctor</option>
-                                    <option value="1">Dr. Rodríguez - Cardiología</option>
-                                    <option value="2">Dra. Martínez - Pediatría</option>
-                                    <option value="3">Dr. Gutiérrez - Neurología</option>
-                                    <option value="4">Dra. Sánchez - Dermatología</option>
+                                <label for="availability-status">Disponibilidad:</label>
+                                <select id="availability-status">
+                                    <option value="available">Disponible</option>
+                                    <option value="unavailable">No Disponible</option>
+                                    <option value="partial">Disponibilidad Parcial</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row" id="partial-hours" style="display: none;">
+                            <div class="form-group">
+                                <label for="available-from">Desde:</label>
+                                <select id="available-from">
+                                    <!-- Time options -->
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="appointmentDate">Fecha</label>
-                                <input type="date" id="appointmentDate" class="form-control" required>
+                                <label for="available-to">Hasta:</label>
+                                <select id="available-to">
+                                    <!-- Time options -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="availability-reason">Motivo (si no está disponible):</label>
+                            <input type="text" id="availability-reason">
+                        </div>
+                        <button id="update-availability" class="primary-button">Actualizar Disponibilidad</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Patient Management Section -->
+            <section id="patient-management">
+                <h2>Gestión de Pacientes</h2>
+                <div class="patient-search">
+                    <div class="search-bar">
+                        <input type="text" id="patient-search-input" placeholder="Buscar paciente por nombre o ID...">
+                        <button id="patient-search-button" class="secondary-button"><i class="fas fa-search"></i> Buscar</button>
+                    </div>
+                    <button id="add-new-patient" class="primary-button"><i class="fas fa-user-plus"></i> Nuevo Paciente</button>
+                </div>
+
+                <div class="patient-list">
+                    <h3>Listado de Pacientes</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Edad</th>
+                                <th>Teléfono</th>
+                                <th>Email</th>
+                                <th>Última Visita</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patients-table">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="patient-modal" id="patient-modal">
+                    <div class="patient-modal-content">
+                        <span class="close-modal">&times;</span>
+                        <h3 id="patient-modal-title">Nuevo Paciente</h3>
+                        <form id="patient-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="patient-form-id">ID:</label>
+                                    <input type="text" id="patient-form-id" placeholder="Automático" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="patient-form-name">Nombre Completo:</label>
+                                    <input type="text" id="patient-form-name" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="patient-form-birthdate">Fecha de Nacimiento:</label>
+                                    <input type="date" id="patient-form-birthdate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="patient-form-gender">Género:</label>
+                                    <select id="patient-form-gender" required>
+                                        <option value="">Seleccione</option>
+                                        <option value="M">Masculino</option>
+                                        <option value="F">Femenino</option>
+                                        <option value="O">Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="patient-form-phone">Teléfono:</label>
+                                    <input type="tel" id="patient-form-phone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="patient-form-email">Email:</label>
+                                    <input type="email" id="patient-form-email">
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label for="appointmentTime">Hora</label>
-                                <input type="time" id="appointmentTime" class="form-control" required>
+                                <label for="patient-form-address">Dirección:</label>
+                                <input type="text" id="patient-form-address">
                             </div>
                             <div class="form-group">
-                                <label for="appointmentNotes">Notas</label>
-                                <textarea id="appointmentNotes" class="form-control" rows="3"></textarea>
+                                <label for="patient-form-notes">Notas Médicas:</label>
+                                <textarea id="patient-form-notes" rows="3"></textarea>
                             </div>
-                            <button type="submit" class="btn btn-block">Registrar Cita</button>
+                            <div class="form-actions">
+                                <button type="button" id="cancel-patient-form" class="secondary-button">Cancelar</button>
+                                <button type="submit" class="primary-button">Guardar</button>
+                            </div>
                         </form>
                     </div>
                 </div>
+            </section>
 
-                <div class="feedback-container">
-                    <h3 class="section-title">Retroalimentación de Pacientes</h3>
-                    <div class="feedback-item">
-                        <div class="feedback-header">
-                            <div class="feedback-patient">María García</div>
-                            <div class="feedback-date">15/05/2025</div>
-                        </div>
-                        <div class="rating">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
-                        </div>
-                        <div class="feedback-text">
-                            Excelente atención por parte del Dr. Rodríguez. El sistema de citas es muy eficiente y pude programar mi cita rápidamente. Altamente recomendado.
-                        </div>
+            <!-- Statistics Section -->
+            <section id="statistics">
+                <h2>Estadísticas y Análisis</h2>
+                <div class="statistics-filters">
+                    <div class="filter-group">
+                        <label for="stats-period">Período:</label>
+                        <select id="stats-period">
+                            <option value="week">Última Semana</option>
+                            <option value="month" selected>Último Mes</option>
+                            <option value="quarter">Último Trimestre</option>
+                            <option value="year">Último Año</option>
+                        </select>
                     </div>
-                    <div class="feedback-item">
-                        <div class="feedback-header">
-                            <div class="feedback-patient">Juan Pérez</div>
-                            <div class="feedback-date">12/05/2025</div>
+                    <div class="filter-group">
+                        <label for="stats-specialty">Especialidad:</label>
+                        <select id="stats-specialty">
+                            <option value="">Todas las especialidades</option>
+                            <option value="general">Medicina General</option>
+                            <option value="pediatria">Pediatría</option>
+                            <option value="ginecologia">Ginecología</option>
+                            <option value="traumatologia">Traumatología</option>
+                            <option value="dermatologia">Dermatología</option>
+                        </select>
+                    </div>
+                    <button id="update-stats" class="secondary-button">Actualizar</button>
+                </div>
+
+                <div class="statistics-grid">
+                    <div class="stat-chart-container">
+                        <h3>Citas por Especialidad</h3>
+                        <canvas id="stats-specialty-chart"></canvas>
+                    </div>
+                    <div class="stat-chart-container">
+                        <h3>Tendencia de Citas</h3>
+                        <canvas id="stats-trend-chart"></canvas>
+                    </div>
+                    <div class="stat-chart-container">
+                        <h3>Tasa de Inasistencias</h3>
+                        <canvas id="stats-noshow-chart"></canvas>
+                    </div>
+                    <div class="stat-chart-container">
+                        <h3>Tiempo Promedio de Espera</h3>
+                        <canvas id="stats-waiting-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="key-metrics">
+                    <h3>Métricas Clave</h3>
+                    <div class="metrics-container">
+                        <div class="metric-card">
+                            <h4>Total de Citas</h4>
+                            <p class="metric-value" id="total-appointments">824</p>
+                            <p class="metric-trend positive">+5.2% vs. período anterior</p>
                         </div>
-                        <div class="rating">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
+                        <div class="metric-card">
+                            <h4>Tasa de Asistencia</h4>
+                            <p class="metric-value" id="attendance-rate-value">86.5%</p>
+                            <p class="metric-trend positive">+2.1% vs. período anterior</p>
                         </div>
-                        <div class="feedback-text">
-                            Buen servicio en general. El tiempo de espera podría mejorar, pero la atención fue buena.
+                        <div class="metric-card">
+                            <h4>Tiempo Promedio de Espera</h4>
+                            <p class="metric-value" id="avg-waiting-time">16.8 min</p>
+                            <p class="metric-trend negative">+1.2 min vs. período anterior</p>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Satisfacción del Paciente</h4>
+                            <p class="metric-value" id="patient-satisfaction">4.7/5</p>
+                            <p class="metric-trend positive">+0.2 vs. período anterior</p>
                         </div>
                     </div>
                 </div>
-            </div>
+
+                <div class="prediction-section">
+                    <h3>Predicciones</h3>
+                    <div class="prediction-cards">
+                        <div class="prediction-card">
+                            <h4>Demanda Prevista (Próxima Semana)</h4>
+                            <canvas id="demand-prediction-chart"></canvas>
+                        </div>
+                        <div class="prediction-card">
+                            <h4>Recomendaciones del Sistema</h4>
+                            <ul id="system-recommendations">
+                                <li>Aumentar capacidad en Traumatología los días lunes (+15%)</li>
+                                <li>Reducir intervalo entre citas de Medicina General de 20 a 18 minutos</li>
+                                <li>Implementar recordatorios adicionales para pacientes de Dermatología</li>
+                                <li>Considerar médico adicional para Pediatría en horario vespertino</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="notification" id="notification">
+            <span id="notification-message"></span>
+            <span class="close-notification">&times;</span>
         </div>
     </div>
 
-    <div class="modal" id="appointmentModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Detalles de la Cita</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="tab-container">
-                <div class="tabs">
-                    <button class="tab-btn active" data-tab="details">Detalles</button>
-                    <button class="tab-btn" data-tab="history">Historial</button>
-                    <button class="tab-btn" data-tab="notes">Notas</button>
-                </div>
-                <div class="tab-content active" id="details-tab">
-                    <div class="form-group">
-                        <label>Paciente</label>
-                        <p id="modalPatientName">María García</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Doctor</label>
-                        <p id="modalDoctorName">Dr. Rodríguez</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Fecha y Hora</label>
-                        <p id="modalDateTime">21/05/2025 - 9:00 AM</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Estado</label>
-                        <p id="modalStatus">Confirmada</p>
-                    </div>
-                </div>
-                <div class="tab-content" id="history-tab">
-                    <p>Historial de citas anteriores del paciente.</p>
-                </div>
-                <div class="tab-content" id="notes-tab">
-                    <textarea class="form-control" rows="5" placeholder="Agregar notas sobre la cita..."></textarea>
-                    <button class="btn" style="margin-top: 1rem;">Guardar Notas</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="scripts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
